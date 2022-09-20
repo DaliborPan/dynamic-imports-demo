@@ -93,14 +93,19 @@ First load JS of index page is a bit bigger than in `main` branch due to using `
 
 ### Browser
 
-On first load, there isn't lodash dependency bundle, which is great.
+On first load, there isn't lodash dependency bundle, which is great. Client has recieved in total `95 kb`, the same size as in (b1)
 
 <img width="820" alt="dynamic-import-import-from-file_browser" src="https://user-images.githubusercontent.com/72815195/191268575-c5efd17c-e3b4-4beb-afd1-6db688b2087e.png">
 
 After clicking a button, HugeComponent and its dependency (lodash) is fetched from the server on-demand (`661... .js` and `291... .js`)
 
-<img width="750" alt="dynamic-import-import-from-file_browser-after" src="https://user-images.githubusercontent.com/72815195/191268883-6ce23604-bf86-
-4994-b7bd-8ea502e97344.png">
+<img width="750" alt="dynamic-import-import-from-file_browser-after" src="https://user-images.githubusercontent.com/72815195/191269081-c34ffd91-4918-4da8-9d17-17b22e430665.png">
+
+# Conclusion
+
+In real projects, it could make massive difference, if we import all our components or just those components, that are actually needed for the particular page. Components can have a lot of dependencies to other libraries, which are also fetched unintentionally on pages, where they are not needed.
+
+In a real project, we can save hundreds of kbs per page, which can make massive difference on initial loading time (especially on mobile phones with slower internet connection).
 
 
 
