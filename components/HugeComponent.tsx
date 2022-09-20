@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 
-export const HugeComponent = () => {
+const HugeComponent = () => {
   const three = _.add(1, 2)
 
   return (
@@ -10,3 +10,5 @@ export const HugeComponent = () => {
     </div>
   )
 }
+
+export default HugeComponent
