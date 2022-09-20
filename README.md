@@ -7,6 +7,8 @@ Git branches:
  - barrel-export-with-hugecomponent (b4)
  - dynamic-import-barrel-export (b5)
  - dynamic-import-import-from-file (b6)
+
+Each branch has a little bit different implementation of importing components. You can open `./pages/index.tsx` file and switch branches here in github to see differences while reading this README
  
 # Overview of demo app (`main` branch)
 
@@ -36,6 +38,8 @@ There isn't any additional JS bundle specifically for components Component1 and 
 # Branches
 
 ## barrel-export-without-hugecomponent (b2)
+
+NOTE: This is a standard way of importing components to our pages in our applications...
 
 There is added `index.ts` inside `/components`, which exports each file from the folder (barrel export).
 **The problem with barrel export is that now `index` page imports ALL components (including HugeComponent) even that not all of them are used in the page.**
