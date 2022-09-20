@@ -1,34 +1,109 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is a demo app showing different approaches, how to import components in pages.
 
-## Getting Started
+Branches:
+ - main (b1)
+ - barrel-export-without-hugecomponent (b2)
+ - import-hugecomponent-from-file (b3)
+ - barrel-export-with-hugecomponent (b4)
+ - dynamic-import-barrel-export (b5)
+ - dynamic-import-import-from-file (b6)
+ 
+# Overview of demo app (`main` branch)
 
-First, run the development server:
+### Components
+ - Component1
+ - Component2
+   - Both really lightweight components
+ 
+ - HugeComponent
+   - This is a component with one dependency (lodash library), which makes the component a bit bigger compared to Component1 and Component2
+ 
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+### Pages
+ - index
+   - This page always renderes Component1. There is always a button - after clicking it, Component2 appears.
+   - Depending on branch, HugeComponent is either rendered immediatelly or after clicking button.
+   
+   
+### Build
+Index page has size of `78.5 kb` (js bundle includes Component1 and Component2)
+![base_build](https://user-images.githubusercontent.com/72815195/191251126-aa76284b-01a2-499e-a7bb-aec58cc56722.png)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Browser
+There isn't any additional JS bundle specifically for components Component1 and Component2, both are included in `index-<ID>.js`. Client has recieved in total `95 kb`
+<img width="842" alt="base_browser" src="https://user-images.githubusercontent.com/72815195/191252623-3f3f894a-64f9-4b0f-8d6a-d713c88e3f26.png">
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+# Branches
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+## barrel-export-without-hugecomponent (b2)
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+There is added `index.ts` inside `/components`, which exports each file from the folder (barrel export).
+**The problem with barrel export is that now `index` page imports ALL components (including HugeComponent) even that not all of them are used in the page.**
+ - `import { Component1, Component2 } from '../components'` looks like we imported just Component1 and Component2. But in the JS bundle, there is also HugeComponent. See build size below
+ 
+### Build
+HugeComponent has a lodash dependency, that needs to be included in JS bundle. Therefore, index page has now size of `104 kb` (js bundle includes Component1, Component2, HugeComponent and lodash dependency). **Note that HugeComponent is in the bundle even that is not imported in index page.**
+![barrel-export-without-hugecomponent_build](https://user-images.githubusercontent.com/72815195/191257324-187a1dae-0f4e-49eb-a410-c7307beafdba.png)
 
-## Learn More
+### Browser
 
-To learn more about Next.js, take a look at the following resources:
+Compared to (b1), there is a new JS bundle `291... .json` 25.5 kb, that includes lodash dependency. Component1, Component2 and HugeComponent are included in `index-<ID>.js` (1 kb). **Note that lodash is not used on index page, but is shipped to the client.**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+<img width="829" alt="barrel-export-without-hugecomponent_browser" src="https://user-images.githubusercontent.com/72815195/191258402-cf181e40-1834-449e-b75c-da626f24489a.png">
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## import-hugecomponent-from-file (b3)
 
-## Deploy on Vercel
+In index page, there is statically imported HugeComponent from `components/HugeComponent`. HugeComponent is also rendered on initial load (actually if it was rendered after clicking a button, it won't make any difference regarding js bundle size, because the file is imported statically).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Build and Browser
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+The same as (b2)
+
+## barrel-export-with-hugecomponent (b4)
+
+Now, there is again barrel export file. This time, it doesn't make any problem, since all components from /components are used on index page. But in real projects, how many pages will use ALL implemented components... ?
+
+### Build and Browser
+
+The same as (b2)
+
+## dynamic-import-barrel-export (b5)
+
+Now, we import Component1 and Component2 from a barrel index file. HugeComponent is imported via `next/dynamic`. HugeComponent is rendered only after clicking a button. We might think that HugeComponent won't be included in first load JS. **But that's not true.** Since we import Component1 and Component2 via barrel file, we import ALL components (including HugeComponent).
+
+### Build
+
+First load js is even bigger due to using `next/dynamic`. What do actually want is to not include HugeComponent in first load js..
+
+![dynamic-import-barrel-export_build](https://user-images.githubusercontent.com/72815195/191265424-9cec0a75-8bec-4b1e-a6f6-6f9826ac7e74.png)
+
+### Browser
+
+The same as (b2) with a difference that `index-<ID>.js` is a bit bigger 2.7 kb due to importing `next/dynamic`
+
+## dynamic-import-import-from-file (b6)
+
+This should be the best implementation. We don't use any barrel index file. We import Component1 and Component2 from their files and HugeComponent is imported dynamically via `next/dynamic`. HugeComponent is rendered after clicking a button, therefore it is not neccessary to include it in first load JS. We need the component (and its dependencies) after clicking a button.
+
+### Build
+
+First load JS of index page is a bit bigger than in `main` branch due to using `next/dynamic`. But HugeComponent is not included!
+
+![dynamic-import-import-from-file_build](https://user-images.githubusercontent.com/72815195/191268326-a6af0ec4-fcb7-4a73-96a1-f4466d579738.png)
+
+### Browser
+
+On first load, there isn't lodash dependency bundle, which is great.
+
+<img width="820" alt="dynamic-import-import-from-file_browser" src="https://user-images.githubusercontent.com/72815195/191268575-c5efd17c-e3b4-4beb-afd1-6db688b2087e.png">
+
+After clicking a button, HugeComponent and its dependency (lodash) is fetched from the server on-demand (`661... .js` and `291... .js`)
+
+<img width="750" alt="dynamic-import-import-from-file_browser-after" src="https://user-images.githubusercontent.com/72815195/191268883-6ce23604-bf86-
+4994-b7bd-8ea502e97344.png">
+
+
+
+
+
+
