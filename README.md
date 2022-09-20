@@ -1,6 +1,6 @@
 This is a demo app showing different approaches, how to import components in pages.
 
-Branches:
+Git branches:
  - main (b1)
  - barrel-export-without-hugecomponent (b2)
  - import-hugecomponent-from-file (b3)
