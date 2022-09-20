@@ -8,7 +8,9 @@ Git branches:
  - dynamic-import-barrel-export (b5)
  - dynamic-import-import-from-file (b6)
 
-Each branch has a little bit different implementation of importing components. You can open `./pages/index.tsx` file and switch branches here in github to see differences while reading this README
+Each branch has a little bit different implementation of importing components. You can open `./pages/index.tsx` file and switch branches here in github to see differences while reading this README.
+
+Each branch has Build logs for its branch's particular implementation. 
  
 # Overview of demo app (`main` branch)
 
