@@ -1,7 +1,9 @@
 import type { NextPage } from 'next'
 import { Dispatch, SetStateAction, Suspense, useState } from 'react'
-import { Component1 } from '../components/Component1'
-import { Component2 } from '../components/Component2'
+import { Component1, Component2 } from '../components'
+import dynamic from 'next/dynamic'
+
+const HugeComponent = dynamic(() => import('../components/HugeComponent'))
 
 const Button: React.FC<{ show: boolean, setShow: Dispatch<SetStateAction<boolean>> }> = ({ show, setShow }) => (
   <button className='border border-slate-400 px-4 py-2 rounded' onClick={() => setShow((current) => !current)}>{show ? 'Hide' : 'Show'} Component2</button>
@@ -21,6 +23,7 @@ const Home: NextPage = () => {
         {show && (
           <Suspense fallback={<Loader />}>
             <Component2 />
+            <HugeComponent />
           </Suspense>
         )}
       </div>
