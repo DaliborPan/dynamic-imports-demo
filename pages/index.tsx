@@ -1,7 +1,7 @@
 import type { NextPage } from 'next'
 import { Dispatch, SetStateAction, Suspense, useState } from 'react'
-import { Component1 } from '../components/Component1'
-import { Component2 } from '../components/Component2'
+import { Component1 } from '../components'
+import { Component2 } from '../components'
 
 const Button: React.FC<{ show: boolean, setShow: Dispatch<SetStateAction<boolean>> }> = ({ show, setShow }) => (
   <button className='border border-slate-400 px-4 py-2 rounded' onClick={() => setShow((current) => !current)}>{show ? 'Hide' : 'Show'} Component2</button>
